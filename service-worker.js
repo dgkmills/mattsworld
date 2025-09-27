@@ -8,8 +8,8 @@ const urlsToCache = [
   '/manifest.json',
   '/images/my-family.jpg',
   '/images/hero-face.png',
-  '/images/icons/icon-192x192.png',
-  '/images/icons/icon-512x512.png'
+  '/images/icons/android-chrome-192x192.png',
+  '/images/icons/android-chrome-512x512.png'
 ];
 
 // --- INSTALL EVENT ---
@@ -41,4 +41,3 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
-
