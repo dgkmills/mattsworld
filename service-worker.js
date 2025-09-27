@@ -1,40 +1,44 @@
-// Define a name for the cache
-const CACHE_NAME = 'matts-world-cache-v1';
+// A name for our cache
+const CACHE_NAME = 'mattsworld-v1';
 
-// List all the files and assets to be cached
-// This is the "app shell" - the minimal resources needed to run offline.
+// All the files and assets we want to cache for offline use
 const urlsToCache = [
   '/',
   '/index.html',
-  // NOTE: We don't cache external resources from CDNs like tailwind or google fonts.
-  // The browser will handle caching those. We only cache our own files.
-  '/images/hero-face.jpg' 
+  '/manifest.json',
+  '/images/my-family.jpg',
+  '/images/hero-face.png',
+  '/images/icons/icon-192x192.png',
+  '/images/icons/icon-512x512.png'
 ];
 
-// Installation event: triggered when the service worker is first installed.
-self.addEventListener('install', event => {
-  // Perform install steps
+// --- INSTALL EVENT ---
+// This runs when the service worker is first installed.
+self.addEventListener('install', (event) => {
+  // We wait until the cache is opened and all our files are added to it.
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
+      .then((cache) => {
+        console.log('Opened cache and adding assets');
         return cache.addAll(urlsToCache);
       })
   );
 });
 
-// Fetch event: triggered for every network request made by the page.
-self.addEventListener('fetch', event => {
+// --- FETCH EVENT ---
+// This runs every time the browser requests a file (like a page, image, or script).
+self.addEventListener('fetch', (event) => {
   event.respondWith(
+    // We check if the requested file is already in our cache.
     caches.match(event.request)
-      .then(response => {
-        // Cache hit - return response from the cache
+      .then((response) => {
+        // If we found it in the cache, return the cached version.
         if (response) {
           return response;
         }
-        // Not in cache - fetch from the network
+        // If it's not in the cache, go to the network and fetch it normally.
         return fetch(event.request);
-      }
-    )
+      })
   );
 });
+
