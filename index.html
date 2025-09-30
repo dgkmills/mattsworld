@@ -20,6 +20,7 @@
             background: linear-gradient(to bottom, #87CEEB, #a2d2ff);
             overflow: hidden;
             cursor: default; /* Use a default cursor */
+            transition: background 1s ease-in-out; /* Smooth background transition */
         }
 
         .font-fredoka {
@@ -169,9 +170,66 @@
         }
         /* --- END OF SUPERHERO --- */
 
+        /* --- NEW: Day/Night Theme Styles --- */
+        #sun {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 100px;
+            height: 100px;
+            background: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 50px #FFD700, 0 0 80px #FFD700;
+            z-index: -1;
+            opacity: 0.9;
+        }
+
+        #moon {
+            position: absolute;
+            top: 15%;
+            right: 15%;
+            width: 80px;
+            height: 80px;
+            background: #f5f3ce;
+            border-radius: 50%;
+            box-shadow: 0 0 40px #f5f3ce, inset -20px 0px 0px 0px #e0deba;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 4s ease-in-out infinite;
+            z-index: -2;
+        }
+        
+        #stars-container, #extra-clouds-container {
+             position: absolute;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             pointer-events: none;
+             z-index: -1;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        /* --- END: Day/Night Theme Styles --- */
+
     </style>
 </head>
 <body class="w-screen h-screen flex items-center justify-center relative">
+    
+    <!-- NEW: Day/Night Sky Objects -->
+    <div id="sun" class="hidden"></div>
+    <div id="moon" class="hidden"></div>
+    <div id="stars-container"></div>
+    <div id="extra-clouds-container"></div>
+
     <!-- Background Clouds -->
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
         <!-- Cloud 1 -->
@@ -347,6 +405,18 @@
                         <span class="tooltip absolute left-1/2 top-0 bg-gray-800 text-white text-xs rounded py-1 px-2 pointer-events-none whitespace-nowrap">Magic Castle</span>
                     </div>
                 </div>
+                <!-- NEW: Story Book Nook -->
+                <div id="books" class="absolute interactive-zone" style="left: 58%; top: 60%; transform: translateX(-50%);">
+                     <div class="relative">
+                        <svg width="80" height="80" viewBox="0 0 80 80">
+                          <rect x="10" y="15" width="60" height="60" rx="5" fill="#f97316"/>
+                          <rect x="15" y="20" width="50" height="50" fill="#fed7aa"/>
+                          <path d="M 40 25 L 40 65" stroke="#f97316" stroke-width="2"/>
+                          <rect x="45" y="30" width="15" height="10" fill="#f97316" />
+                        </svg>
+                        <span class="tooltip absolute left-1/2 top-0 bg-gray-800 text-white text-xs rounded py-1 px-2 pointer-events-none whitespace-nowrap">Story Time</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -377,13 +447,13 @@
             envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 1 }
         }).toDestination();
         
-        // SYNTAX FIX: Added 'const sounds = {' to correctly define the object.
         const sounds = {
             family: "C5",
             nature: "E5",
             coloring: "G5",
             games: "A5",
-            disney: "F5"
+            disney: "F5",
+            books: "B5"
         };
 
         function playClickSound(note = "C5") {
@@ -410,7 +480,7 @@
                     <p class="my-4">Did you know? Some trees can live for thousands of years!</p>
                     <div class="grid grid-cols-2 gap-4">
                         <a href="https://kids.nationalgeographic.com/animals" target="_blank" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">Cool Animals</a>
-                        <a href="https://www.pbs.org/parents/crafts-and-experiments/nature-and-outdoors" target="_blank" class="bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-lg transition-colors">Nature Crafts</a>
+                        <a href="https://naturecraftsforkids.com/" target="_blank" class="bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-lg transition-colors">Nature Crafts</a>
                     </div>
                 `
             },
@@ -418,7 +488,7 @@
                 title: "The Art Cave",
                 body: `
                     <p>A place to get creative! Let's make some art.</p>
-                     <img src="https://placehold.co/400x250/fecaca/333333?text=His+Awesome+Drawing" class="rounded-lg mx-auto my-4 shadow-md" alt="Placeholder for his drawing">
+                     <img src="images/matt-cake.jpg" class="rounded-lg mx-auto my-4 shadow-md" alt="Matt's awesome cake drawing" onerror="this.onerror=null;this.src='https://placehold.co/400x250/fecaca/333333?text=Awesome+Drawing+Here';">
                     <p>We can display your best drawings right here!</p>
                     <a href="https://www.online-coloring.com/" target="_blank" class="mt-4 inline-block bg-red-400 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-lg transition-colors">Online Coloring Pages</a>
                 `
@@ -438,6 +508,18 @@
                     <img src="https://placehold.co/400x250/a5b4fc/333333?text=Disney+Magic" class="rounded-lg mx-auto my-4 shadow-md" alt="Placeholder for Disney image">
                     <p>We can put links to your favorite songs and movies here.</p>
                     <a href="https://www.disney.com/" target="_blank" class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">Go to Disney.com</a>
+                `
+            },
+            books: {
+                title: "Story Time!",
+                body: `
+                    <p>Get ready for some amazing adventures in our favorite books!</p>
+                    <div class="aspect-w-16 aspect-h-9 my-4 bg-gray-300 rounded-lg flex items-center justify-center text-gray-500">
+                        <!-- To embed a YouTube video, replace this div with the embed code from YouTube -->
+                        <p>YouTube video coming soon!</p>
+                    </div>
+                    <p>We'll be reading lots of cool stories together.</p>
+                    <a href="https://www.youtube.com/" target="_blank" class="mt-4 inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">Matt's YouTube Channel</a>
                 `
             },
         };
@@ -502,9 +584,66 @@
             }, 1000);
         });
 
-        // --- NEW: PWA Service Worker Registration ---
+        // --- NEW: Day/Night Theme Script ---
+        function setSkyTheme() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            const sun = document.getElementById('sun');
+            const moon = document.getElementById('moon');
+            const starsContainer = document.getElementById('stars-container');
+            const extraCloudsContainer = document.getElementById('extra-clouds-container');
+            
+            // It's considered daytime between 6 AM and 7 PM (19:00)
+            const isDay = hour >= 6 && hour < 19;
+
+            // Clear previously generated elements to prevent duplication
+            starsContainer.innerHTML = '';
+            extraCloudsContainer.innerHTML = '';
+
+            if (isDay) {
+                // Daytime settings
+                body.style.background = 'linear-gradient(to bottom, #87CEEB, #a2d2ff)';
+                sun.classList.remove('hidden');
+                moon.classList.add('hidden');
+
+                // Add an extra cloud for a fuller daytime sky
+                const cloudHTML = `
+                    <div class="absolute top-[25%] right-[15%] opacity-70" style="transform: scale(0.8)">
+                        <svg width="200" height="100" viewBox="0 0 200 100">
+                            <circle cx="50" cy="50" r="50" fill="white" /><circle cx="110" cy="45" r="45" fill="white" /><circle cx="160" cy="55" r="40" fill="white" />
+                        </svg>
+                    </div>`;
+                extraCloudsContainer.innerHTML = cloudHTML;
+                
+            } else {
+                // Nighttime settings
+                body.style.background = 'linear-gradient(to bottom, #020111, #19193b, #2d3a8c)';
+                sun.classList.add('hidden');
+                moon.classList.remove('hidden');
+
+                // Generate a sky full of stars
+                for (let i = 0; i < 120; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.left = `${Math.random() * 100}%`;
+                    const size = Math.random() * 2.5 + 1;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    star.style.animationDelay = `${Math.random() * 4}s`;
+                    star.style.animationDuration = `${Math.random() * 2 + 3}s`;
+                    starsContainer.appendChild(star);
+                }
+            }
+        }
+
+        // --- PWA Service Worker Registration & Theme Setter ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
+                // Set the theme as soon as the window loads
+                setSkyTheme();
+
+                // Register the PWA service worker
                 navigator.serviceWorker.register('/service-worker.js')
                     .then(registration => {
                         console.log('Service Worker registered! Scope: ', registration.scope);
@@ -513,14 +652,12 @@
                         console.log('Service Worker registration failed: ', err);
                     });
             });
+        } else {
+             // If service worker isn't supported, still set the theme on load
+            window.addEventListener('load', setSkyTheme);
         }
-        // --- END OF PWA SCRIPT ---
 
     </script>
 </body>
 </html>
-
-
-
-
 
