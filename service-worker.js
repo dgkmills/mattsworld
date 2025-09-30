@@ -1,5 +1,5 @@
 // A name for our cache
-const CACHE_NAME = 'mattsworld-v2'; // Note: I've updated the cache version name
+const CACHE_NAME = 'mattsworld-v3'; // IMPORTANT: Increased cache version
 
 // All the files and assets we want to cache
 const urlsToCache = [
@@ -8,6 +8,7 @@ const urlsToCache = [
   '/manifest.json',
   '/images/my-family.jpg',
   '/images/hero-face.png',
+  '/images/matt-cake.jpg', // Added the new drawing to the cache
   '/images/icons/android-chrome-192x192.png',
   '/images/icons/android-chrome-512x512.png',
   '/images/icons/apple-touch-icon.png'
@@ -22,6 +23,8 @@ self.addEventListener('install', (event) => {
         console.log('Opened cache and adding assets');
         return cache.addAll(urlsToCache);
       })
+      // NEW: Force the waiting service worker to become the active service worker.
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -35,10 +38,13 @@ self.addEventListener('activate', (event) => {
           // Find all caches that aren't our current one and delete them
           return cacheName.startsWith('mattsworld-') && cacheName !== CACHE_NAME;
         }).map(cacheName => {
+          console.log('Deleting old cache:', cacheName);
           return caches.delete(cacheName);
         })
       );
     })
+    // NEW: Take control of all open pages as soon as the service worker activates.
+    .then(() => self.clients.claim())
   );
 });
 
@@ -46,14 +52,15 @@ self.addEventListener('activate', (event) => {
 // --- FETCH EVENT ---
 // This runs every time the browser requests a file.
 self.addEventListener('fetch', (event) => {
+  // Using a "Stale-While-Revalidate" strategy
   event.respondWith(
     caches.open(CACHE_NAME).then((cache) => {
       // 1. Try to get the response from the cache first.
       return cache.match(event.request).then((cachedResponse) => {
-        // 2. Go to the network to get a fresh version.
+        // 2. Go to the network to get a fresh version in the background.
         const fetchPromise = fetch(event.request).then((networkResponse) => {
           // If we get a valid response from the network,
-          // we update the cache with the new version.
+          // we update the cache with the new version for next time.
           if (networkResponse && networkResponse.status === 200) {
             cache.put(event.request, networkResponse.clone());
           }
@@ -61,7 +68,7 @@ self.addEventListener('fetch', (event) => {
         });
 
         // 3. Return the cached version right away if it exists,
-        // otherwise wait for the network response.
+        // otherwise wait for the network response. This makes the app feel instant.
         return cachedResponse || fetchPromise;
       });
     })
