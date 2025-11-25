@@ -514,9 +514,8 @@
                 title: "Story Time!",
                 body: `
                     <p>Get ready for some amazing adventures in our favorite books!</p>
-                    <div class="aspect-w-16 aspect-h-9 my-4 bg-gray-300 rounded-lg flex items-center justify-center text-gray-500">
-                        <!-- To embed a YouTube video, replace this div with the embed code from YouTube -->
-                        <p>YouTube video coming soon!</p>
+                    <div class="relative w-full my-4" style="padding-top:56.25%;">
+                        <iframe id="story-iframe" class="absolute inset-0 w-full h-full rounded-lg" src="https://www.youtube.com/embed/wJvcpAZpIHc" title="Matt's YouTube Story Time" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                     </div>
                     <p>We'll be reading lots of cool stories together.</p>
                     <a href="https://www.youtube.com/" target="_blank" class="mt-4 inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">Matt's YouTube Channel</a>
@@ -534,8 +533,14 @@
             }
         }
 
-        // Function to close the modal
+        // Function to close the modal and stop any playing media
         function closeModal() {
+            // If the Story Time iframe exists, stop playback by removing the src.
+            const storyIframe = document.getElementById('story-iframe');
+            if (storyIframe) {
+                // Remove the src to stop playback (this also releases network resources)
+                storyIframe.src = '';
+            }
             modalContainer.classList.add('hidden');
         }
 
